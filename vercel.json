@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "https://docubrain-kartik.fly.dev/$1" }
+  ]
+}
