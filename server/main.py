@@ -4,6 +4,7 @@ Single-process, in-memory store — fine for the demo/free-tier deploy.
 Swapping in a persistent/multi-tenant store is a ROADMAP item.
 """
 
+import os
 import tempfile
 from typing import Optional
 
@@ -18,6 +19,25 @@ app = FastAPI(title="docubrain", version="0.1.0")
 # would key this by API key / workspace — out of scope for v0.1.
 _store = VectorStore(embedder=StubEmbedder())
 _documents: dict[str, dict] = {}
+
+_SAMPLE_PDF = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)), "sample_data", "sample_contract.pdf"
+)
+
+
+@app.on_event("startup")
+async def _seed_sample_document() -> None:
+    """Pre-load the bundled sample contract so the public demo is queryable
+    without requiring a visitor to upload their own PDF first."""
+    if not os.path.exists(_SAMPLE_PDF):
+        return
+    document = ingest_pdf(_SAMPLE_PDF)
+    _store.add_document(document)
+    _documents[document.doc_id] = {
+        "filename": "sample_contract.pdf",
+        "page_count": document.page_count,
+        "chunk_count": len(document.chunks),
+    }
 
 
 class AskRequest(BaseModel):
