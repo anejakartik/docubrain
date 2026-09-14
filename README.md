@@ -27,6 +27,14 @@ See [PRODUCT.md](./PRODUCT.md) for the full user/problem/solution writeup. TL;DR
 
 ## Try it
 
+**Live demo (API only, no UI yet):** https://docubrain-kartik.fly.dev — pre-seeded with a sample contract:
+
+```bash
+curl -X POST https://docubrain-kartik.fly.dev/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question": "Is there a cap on liability?"}'
+```
+
 Local in under a minute:
 
 ```bash

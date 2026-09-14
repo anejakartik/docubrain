@@ -18,9 +18,13 @@
 
 ---
 
+### 2026-09-14 — live demo deployed
+- [x] Deployed to Fly.io: https://docubrain-kartik.fly.dev — pre-seeded with the sample contract on boot so it's queryable with no setup
+- Notes: custom domain (`docubrain.kartikaneja.com`) not wired up yet — no DNS/Cloudflare access from this environment; app runs fine on the `fly.dev` hostname in the meantime.
+
 ## Short-term — next 4 weeks
 
-- [ ] **P0 / Deploy the live demo** — `docubrain.kartikaneja.com`, Fly.io + a public sample PDF corpus *(est. 1 day · drives the launch LinkedIn post)*
+- [ ] **P0 / Custom domain** — point `docubrain.kartikaneja.com` at the Fly app *(needs Cloudflare/DNS access)*
 - [ ] **P0 / Real layout-aware extraction** — swap flat `page.get_text()` for a layout-preserving extractor (Unstructured or PyMuPDF's block/dict mode) so tables and multi-column text don't get mangled *(est. 2-3 days · drives a "why generic RAG breaks on real documents" post)*
 - [ ] **P1 / Page-region highlighting** — render the cited page as an image with the matching region boxed, not just a page number *(est. 2-3 days — the single biggest product upgrade)*
 - [ ] **P1 / Generative answers via a real LLM** — wire up an `OpenAIGenerator` alongside `OpenAIEmbedder`, keep extractive mode as the always-available fallback
