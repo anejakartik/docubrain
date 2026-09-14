@@ -9,12 +9,14 @@ import tempfile
 from typing import Optional
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
-from fastapi.responses import RedirectResponse
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from docubrain import StubEmbedder, VectorStore, ask, ingest_pdf
 
 app = FastAPI(title="docubrain", version="0.1.0")
+
+_STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 
 # One process-wide store for the demo deploy. A real multi-tenant deploy
 # would key this by API key / workspace — out of scope for v0.1.
@@ -54,8 +56,8 @@ class AskResponse(BaseModel):
 
 
 @app.get("/", include_in_schema=False)
-async def root() -> RedirectResponse:
-    return RedirectResponse(url="/docs")
+async def root() -> FileResponse:
+    return FileResponse(os.path.join(_STATIC_DIR, "index.html"))
 
 
 @app.post("/ingest")
