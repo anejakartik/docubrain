@@ -9,6 +9,7 @@ import tempfile
 from typing import Optional
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 
 from docubrain import StubEmbedder, VectorStore, ask, ingest_pdf
@@ -50,6 +51,11 @@ class AskResponse(BaseModel):
     text: str
     cited_pages: list[int]
     doc_id: str
+
+
+@app.get("/", include_in_schema=False)
+async def root() -> RedirectResponse:
+    return RedirectResponse(url="/docs")
 
 
 @app.post("/ingest")
