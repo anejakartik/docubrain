@@ -41,13 +41,18 @@ def ask(
         raise ValueError("No relevant content found for this question.")
 
     supporting_chunks = [c for c, _ in results]
-    cited_pages = sorted({c.page for c in supporting_chunks})
 
     if generator is not None:
         text = generator(question, supporting_chunks)
+        cited_pages = sorted({c.page for c in supporting_chunks})
     else:
+        # Extractive mode returns exactly one chunk's text verbatim, so the
+        # citation must point at that chunk's page only — citing every
+        # retrieved chunk here would cite pages whose text never appears in
+        # the answer, breaking the "cited or it doesn't exist" guarantee.
         best_chunk = supporting_chunks[0]
         text = best_chunk.text.strip()
+        cited_pages = [best_chunk.page]
 
     return Answer(
         text=text,

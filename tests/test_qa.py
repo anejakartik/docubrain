@@ -21,6 +21,15 @@ def test_ask_returns_an_answer_with_a_citation(populated_store):
     assert answer.cited_pages == [4]
 
 
+def test_ask_only_cites_the_page_its_text_comes_from(populated_store):
+    # Regression: with top_k > 1, extractive mode used to cite every
+    # retrieved chunk's page even though the returned text only comes from
+    # the single best-matching chunk.
+    answer = ask("Is there a cap on liability?", populated_store, top_k=3)
+    assert answer.cited_pages == [4]
+    assert answer.text.startswith("Section 4")
+
+
 def test_ask_raises_on_empty_store():
     store = VectorStore(embedder=StubEmbedder())
     with pytest.raises(ValueError):
