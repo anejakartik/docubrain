@@ -27,10 +27,10 @@ See [PRODUCT.md](./PRODUCT.md) for the full user/problem/solution writeup. TL;DR
 
 ## Try it
 
-**Live demo (API only, no UI yet):** https://docubrain-kartik.fly.dev — pre-seeded with a sample contract:
+**Live demo:** https://docubrain.kartikaneja.com — pre-seeded with a sample contract, ask it a question right in the browser or via the API:
 
 ```bash
-curl -X POST https://docubrain-kartik.fly.dev/ask \
+curl -X POST https://docubrain.kartikaneja.com/ask \
   -H "Content-Type: application/json" \
   -d '{"question": "Is there a cap on liability?"}'
 ```
