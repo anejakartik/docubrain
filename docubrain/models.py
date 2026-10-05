@@ -12,12 +12,19 @@ class Chunk:
     `page` is 1-indexed to match how a human would refer to a page
     when opening the PDF — never expose 0-indexed page numbers in
     an answer's citation.
+
+    `bbox` is the (x0, y0, x1, y1) region of the page this chunk's text
+    occupies, in PDF point coordinates — None if it couldn't be located
+    (e.g. a scanned page with no searchable text layer). Lets a citation
+    be rendered as a boxed region on the page image, not just a page
+    number, so a reader can verify it at a glance.
     """
 
     doc_id: str
     chunk_id: str
     page: int
     text: str
+    bbox: tuple[float, float, float, float] | None = None
 
 
 @dataclass

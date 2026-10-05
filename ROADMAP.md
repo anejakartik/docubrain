@@ -24,10 +24,16 @@
 - [x] Custom domain live: **https://docubrain.kartikaneja.com** — `vercel.json` pure rewrite-proxy (no build step, same pattern as tracelens) + CNAME at the registrar, done by Kartik
 - Notes: this closes out the ROADMAP's original P0 deploy item end-to-end.
 
+### 2026-10-05 — page-region highlighting
+- [x] Every chunk now carries a `bbox` (PDF point coords) located at ingest time via `page.search_for()`, with a line-by-line fallback; `None` when there's no text layer
+- [x] `/ask` returns `citations: [{page, bbox}]` alongside `cited_pages`; new `GET /documents/{doc_id}/pages/{n}/image?highlight=x0,y0,x1,y1` renders the cited page as a PNG with the region boxed
+- [x] Demo UI shows the highlighted page thumbnail under every answer
+- Notes: found + fixed two bugs along the way — the sample PDF generator used `insert_text()`, which silently truncated every section mid-sentence (no wrapping), and PyMuPDF wraps negative page indexes, so page 0 would have rendered the *last* page instead of 404ing. Uploaded PDFs now persist to disk (keyed by doc_id) since rendering needs the original bytes.
+
 ## Short-term — next 4 weeks
 
 - [ ] **P0 / Real layout-aware extraction** — swap flat `page.get_text()` for a layout-preserving extractor (Unstructured or PyMuPDF's block/dict mode) so tables and multi-column text don't get mangled *(est. 2-3 days · drives a "why generic RAG breaks on real documents" post)*
-- [ ] **P1 / Page-region highlighting** — render the cited page as an image with the matching region boxed, not just a page number *(est. 2-3 days — the single biggest product upgrade)*
+- [x] **P1 / Page-region highlighting** — shipped 2026-10-05 (see above)
 - [ ] **P1 / Generative answers via a real LLM** — wire up an `OpenAIGenerator` alongside `OpenAIEmbedder`, keep extractive mode as the always-available fallback
 
 ## 3-month

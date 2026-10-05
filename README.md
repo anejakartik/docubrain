@@ -21,9 +21,10 @@ See [PRODUCT.md](./PRODUCT.md) for the full user/problem/solution writeup. TL;DR
 - Pluggable embeddings: a dependency-free `StubEmbedder` (no API key, deterministic) and an `OpenAIEmbedder` for production use
 - Cosine-similarity search over ingested chunks
 - `ask()` always returns an `Answer` with at least one cited page — there is no code path that returns an uncited answer (enforced at the data-model level, not just by convention)
-- FastAPI service (`/ingest`, `/ask`, `/documents`, `/healthz`)
+- Page-region highlighting: every citation carries the bounding box of its source text, and `/documents/{id}/pages/{n}/image?highlight=…` renders the page with that region boxed — the answer points at *where* on the page, not just which page
+- FastAPI service (`/ingest`, `/ask`, `/documents`, page images, `/healthz`)
 - `demo.py` — runs end-to-end against a bundled sample contract with zero API keys
-- 24 passing tests, all of them running against the zero-API-key path
+- 39 passing tests, all of them running against the zero-API-key path
 
 ## Try it
 
@@ -58,7 +59,7 @@ See [docs/architecture.md](./docs/architecture.md). Stack: Python + PyMuPDF + Fa
 
 ## What's next
 
-See [ROADMAP.md](./ROADMAP.md) — the biggest post-MVP item is real layout-aware page-region highlighting (not just a page number), which is the original full product vision.
+See [ROADMAP.md](./ROADMAP.md) — the biggest post-MVP item is layout-aware extraction (tables and multi-column text), so highlighting stays accurate on real-world documents, not just clean ones.
 
 ## Contributing
 

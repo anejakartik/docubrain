@@ -5,6 +5,7 @@ from docubrain.ingest import ingest_pdf
 from docubrain.embeddings import StubEmbedder, OpenAIEmbedder
 from docubrain.store import VectorStore
 from docubrain.qa import ask
+from docubrain.render import render_page_png
 
 __all__ = [
     "Chunk",
@@ -15,4 +16,5 @@ __all__ = [
     "OpenAIEmbedder",
     "VectorStore",
     "ask",
+    "render_page_png",
 ]

@@ -265,6 +265,30 @@
   }
   .error{ color: var(--err); font-size: 14px; margin-top: 14px; }
 
+  .citation-images{
+    margin-top: 14px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .citation-images figure{
+    margin: 0;
+    max-width: 260px;
+  }
+  .citation-images img{
+    display: block;
+    width: 100%;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg-raised);
+  }
+  .citation-images figcaption{
+    margin-top: 5px;
+    font-size: 11.5px;
+    color: var(--ink-faint);
+    text-align: center;
+  }
+
   .upload-row{
     margin-top: 18px;
     padding-top: 18px;
@@ -362,6 +386,7 @@
           <span class="label">cited page(s):</span>
           <span id="answer-pages"></span>
         </div>
+        <div class="citation-images" id="answer-images"></div>
       </div>
 
       <div class="upload-row">
@@ -412,6 +437,7 @@
   var answerEl = document.getElementById('answer');
   var answerText = document.getElementById('answer-text');
   var answerPages = document.getElementById('answer-pages');
+  var answerImages = document.getElementById('answer-images');
 
   form.addEventListener('submit', function(e){
     e.preventDefault();
@@ -446,6 +472,27 @@
         badge.textContent = 'p. ' + p;
         answerPages.appendChild(badge);
       });
+
+      // Render each citation's page as an image with its matching region
+      // boxed, so the citation is something to look at, not just a number.
+      answerImages.innerHTML = '';
+      (r.data.citations || []).forEach(function(c){
+        var url = '/documents/' + encodeURIComponent(r.data.doc_id) +
+          '/pages/' + c.page + '/image';
+        if (c.bbox) url += '?highlight=' + c.bbox.join(',');
+
+        var fig = document.createElement('figure');
+        var img = document.createElement('img');
+        img.src = url;
+        img.alt = 'Page ' + c.page + ' with the cited region boxed';
+        img.loading = 'lazy';
+        var caption = document.createElement('figcaption');
+        caption.textContent = 'page ' + c.page;
+        fig.appendChild(img);
+        fig.appendChild(caption);
+        answerImages.appendChild(fig);
+      });
+
       answerEl.classList.remove('hidden');
     })
     .catch(function(err){

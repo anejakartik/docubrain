@@ -17,6 +17,33 @@ DEFAULT_CHUNK_SIZE = 800
 DEFAULT_CHUNK_OVERLAP = 150
 
 
+def _locate_bbox(page: fitz.Page, chunk_text: str) -> tuple[float, float, float, float] | None:
+    """Find the region `chunk_text` occupies on `page`, for highlighting.
+
+    `page.search_for()` handles an exact multi-line match in one call when
+    the needle is a verbatim substring of the page's extracted text (which
+    every chunk is, by construction) — it returns one quad per matched
+    line. Falls back to searching line-by-line, since a handful of PDFs
+    produce extracted text whose whitespace doesn't round-trip exactly
+    through a single multi-line search. Returns the union of whatever
+    rects are found, or None if nothing matched at all.
+    """
+    rects = page.search_for(chunk_text)
+    if not rects:
+        for line in chunk_text.split("\n"):
+            line = line.strip()
+            if line:
+                rects.extend(page.search_for(line))
+    if not rects:
+        return None
+    return (
+        min(r.x0 for r in rects),
+        min(r.y0 for r in rects),
+        max(r.x1 for r in rects),
+        max(r.y1 for r in rects),
+    )
+
+
 def _chunk_page_text(text: str, chunk_size: int, overlap: int) -> list[str]:
     """Split one page's text into overlapping windows.
 
@@ -67,6 +94,7 @@ def ingest_pdf(
                         chunk_id=f"{doc_id}-p{page_number}-{i}",
                         page=page_number,
                         text=window,
+                        bbox=_locate_bbox(page, window),
                     )
                 )
         return Document(

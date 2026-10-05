@@ -44,7 +44,14 @@ def make_sample_pdf(output_path: str) -> str:
     doc = fitz.open()
     for page_text in PAGES:
         page = doc.new_page()
-        page.insert_text((72, 72), page_text, fontsize=11)
+        # insert_text() places text at a single point with no wrapping — it
+        # silently drops anything that runs past the right margin, which was
+        # truncating every section's text mid-sentence (found while adding
+        # page-region highlighting: the "highlighted" region was pointing at
+        # text that didn't actually exist on the rendered page). insert_textbox()
+        # wraps within a rect instead.
+        rect = fitz.Rect(72, 72, page.rect.width - 72, page.rect.height - 72)
+        page.insert_textbox(rect, page_text, fontsize=11)
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     doc.save(output_path)
     doc.close()
