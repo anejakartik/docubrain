@@ -36,7 +36,13 @@ class VectorStore:
     def __len__(self) -> int:
         return len(self._chunks)
 
-    def search(self, query: str, top_k: int = 5) -> list[tuple[Chunk, float]]:
+    def search(
+        self, query: str, top_k: int = 5, *, doc_id: str | None = None
+    ) -> list[tuple[Chunk, float]]:
+        """Top-`top_k` chunks by cosine similarity, optionally restricted to
+        one document. The restriction happens before ranking, not after —
+        filtering a global top-k afterwards drops the requested document
+        entirely whenever another document's chunks outscore it."""
         if self._vectors is None or len(self._chunks) == 0:
             return []
         query_vec = np.array(self._embedder.embed([query])[0], dtype=np.float32)
@@ -45,6 +51,12 @@ class VectorStore:
         corpus_norms[corpus_norms == 0] = 1.0
         scores = (self._vectors @ query_vec) / (corpus_norms * query_norm)
 
-        top_k = min(top_k, len(self._chunks))
-        top_indices = np.argsort(-scores)[:top_k]
-        return [(self._chunks[i], float(scores[i])) for i in top_indices]
+        candidates = np.arange(len(self._chunks))
+        if doc_id is not None:
+            candidates = np.array(
+                [i for i, c in enumerate(self._chunks) if c.doc_id == doc_id], dtype=int
+            )
+            if candidates.size == 0:
+                return []
+        ranked = candidates[np.argsort(-scores[candidates])][:top_k]
+        return [(self._chunks[i], float(scores[i])) for i in ranked]

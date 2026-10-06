@@ -24,7 +24,7 @@ See [PRODUCT.md](./PRODUCT.md) for the full user/problem/solution writeup. TL;DR
 - Page-region highlighting: every citation carries the bounding box of its source text, and `/documents/{id}/pages/{n}/image?highlight=…` renders the page with that region boxed — the answer points at *where* on the page, not just which page
 - FastAPI service (`/ingest`, `/ask`, `/documents`, page images, `/healthz`)
 - `demo.py` — runs end-to-end against a bundled sample contract with zero API keys
-- 39 passing tests, all of them running against the zero-API-key path
+- 40 passing tests, all of them running against the zero-API-key path
 
 ## Try it
 

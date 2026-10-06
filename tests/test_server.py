@@ -120,3 +120,17 @@ def test_documents_listing_hides_server_paths(client, sample_pdf_path):
     _ingest_sample(client, sample_pdf_path)
     for meta in client.get("/documents").json().values():
         assert "source_path" not in meta
+
+
+def test_ask_scoped_to_a_doc_outscored_by_another_still_answers(client, sample_pdf_path):
+    # Regression: /ask used to take a global top-k and filter by doc_id
+    # afterwards, so a second, identical upload lost every tie to the
+    # first one and came back "No relevant content found".
+    _ingest_sample(client, sample_pdf_path)
+    second = _ingest_sample(client, sample_pdf_path)
+    response = client.post(
+        "/ask",
+        json={"question": "Is there a cap on liability?", "doc_id": second, "top_k": 1},
+    )
+    assert response.status_code == 200
+    assert response.json()["doc_id"] == second

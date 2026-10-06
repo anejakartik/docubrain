@@ -29,6 +29,7 @@
 - [x] `/ask` returns `citations: [{page, bbox}]` alongside `cited_pages`; new `GET /documents/{doc_id}/pages/{n}/image?highlight=x0,y0,x1,y1` renders the cited page as a PNG with the region boxed
 - [x] Demo UI shows the highlighted page thumbnail under every answer
 - Notes: found + fixed two bugs along the way — the sample PDF generator used `insert_text()`, which silently truncated every section mid-sentence (no wrapping), and PyMuPDF wraps negative page indexes, so page 0 would have rendered the *last* page instead of 404ing. Uploaded PDFs now persist to disk (keyed by doc_id) since rendering needs the original bytes.
+- [x] Fixed a doc-scoped retrieval bug found while verifying uploads on the live demo: `ask(doc_id=…)` filtered a *global* top-k afterwards, so any document outscored by another (e.g. a re-upload of the seeded sample) returned "No relevant content". `VectorStore.search` now restricts to the document before ranking. Demo also scaled to one Fly machine, since the store is in-memory per machine.
 
 ## Short-term — next 4 weeks
 

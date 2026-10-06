@@ -34,9 +34,7 @@ def ask(
     treat that as "nothing ingested yet" / "no relevant content found",
     never fabricate a citation to cover for an empty result.
     """
-    results = store.search(question, top_k=top_k)
-    if doc_id is not None:
-        results = [(c, s) for c, s in results if c.doc_id == doc_id]
+    results = store.search(question, top_k=top_k, doc_id=doc_id)
     if not results:
         raise ValueError("No relevant content found for this question.")
 
